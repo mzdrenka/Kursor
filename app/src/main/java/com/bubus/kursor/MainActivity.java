@@ -9,8 +9,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.URLUtil;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,87 +41,65 @@ public class MainActivity extends AppCompatActivity {
 
     // Request method GET. The value must be uppercase.
     private static final String REQUEST_METHOD_GET = "GET";
-    //URL
-    private String apiUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee";
 
     //PLN
     private static final String PLN_SYMBOL = "PLN";
-    //USD
-    private static final String USD_SYMBOL = "USD";
 
     // Send http request button.
     private Button requestUrlButtonPLN = null;
 
-    private Button requestUrlButtonUSD = null;
-
+    private Spinner currencyList = null;
 
     private TextView responseTextView = null;
 
     private Handler uiUpdater = null;
 
+    private String Currency = "";
+
+    private String CurrencyRate = null;
+
+    final String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initControls();
 
-        requestUrlButtonPLN.setOnClickListener(new View.OnClickListener() {
+
+        currencyList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee&symbols=PLN";
-                if(!TextUtils.isEmpty(reqUrl))
-                {
-                    if(URLUtil.isHttpUrl(reqUrl) || URLUtil.isHttpsUrl(reqUrl))
-                    {
-                        startSendHttpRequestThread(reqUrl);
-                    }else
-                    {
-                        Toast.makeText(getApplicationContext(), "The request url is not a valid http or https url.", Toast.LENGTH_LONG).show();
-                    }
-                }else
-                {
-                    Toast.makeText(getApplicationContext(), "The request url can not be empty.", Toast.LENGTH_LONG).show();
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0) {
+
+                } else {
+                    Currency = adapterView.getItemAtPosition(i).toString();
+                    startSendHttpRequestThread(reqUrl);
+
                 }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
-        requestUrlButtonUSD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee&symbols=USD";
-                if(!TextUtils.isEmpty(reqUrl))
-                {
-                    if(URLUtil.isHttpUrl(reqUrl) || URLUtil.isHttpsUrl(reqUrl))
-                    {
-                        startSendHttpRequestThread(reqUrl);
-                    }else
-                    {
-                        Toast.makeText(getApplicationContext(), "The request url is not a valid http or https url.", Toast.LENGTH_LONG).show();
-                    }
-                }else
-                {
-                    Toast.makeText(getApplicationContext(), "The request url can not be empty.", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+
     }
 
     // Initialize app controls.
     @SuppressLint("HandlerLeak")
     private void initControls() {
-        if (requestUrlButtonPLN == null) {
-            requestUrlButtonPLN = (Button) findViewById(R.id.http_url_request_button_PLN);
-        }
-        if (requestUrlButtonUSD == null) {
-            requestUrlButtonUSD = (Button) findViewById(R.id.http_url_request_button_UDS);
+        if (currencyList == null) {
+            currencyList = (Spinner) findViewById(R.id.currency_list);
         }
         if (responseTextView == null) {
             responseTextView = (TextView) findViewById(R.id.http_url_response_text_view);
         }
 
         // This handler is used to wait for child thread message to update server response text in TextView.
-        if (uiUpdater == null) uiUpdater = new Handler() {
+        uiUpdater = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
@@ -132,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 JSONObject jsonObj = (new JSONObject(responseText)).getJSONObject("rates");
 
-                                String CurrencyRate=jsonObj.getString(PLN_SYMBOL);
+                                CurrencyRate=jsonObj.getString(Currency);
 
                                 responseTextView.setText(CurrencyRate);
 
