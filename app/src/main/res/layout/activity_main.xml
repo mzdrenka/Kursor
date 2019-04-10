@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="157dp"
         android:layout_marginTop="168dp"
-        android:entries="@array/currency_list" />
+        android:entries="@array/currencyList" />
 
     <TextView
 
@@ -26,5 +26,32 @@
         android:layout_marginEnd="178dp"
         android:text="0"
         android:textSize="25dp" />
+
+    <TextView
+        android:id="@+id/currencyBase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/baseCurrencyName"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/baseCurrencyShortName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginTop="30dp"
+        android:layout_toEndOf="@+id/currencyBase"
+        android:text="TEST"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
+
 
 </RelativeLayout>

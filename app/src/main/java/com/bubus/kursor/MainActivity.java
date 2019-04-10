@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SHOW_RESPONSE_TEXT = 1;
 
     // The key of message stored server returned data.
-    private static final String KEY_RESPONSE_TEXT = "KEY_RESPONSE_TEXT";
+    private static final String RESPONSE_TEXT = "RESPONSE_TEXT";
 
     // Request method GET. The value must be uppercase.
     private static final String REQUEST_METHOD_GET = "GET";
@@ -52,11 +52,17 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView responseTextView = null;
 
+    private TextView responseTextViewCurrencyShort = null;
+
+    private String responseTextCurrencyShort = null;
+
     private Handler uiUpdater = null;
 
     private String Currency = "";
 
     private String CurrencyRate = null;
+
+    private String CurrencyBaseShortName = null;
 
     final String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee";
 
@@ -97,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
         if (responseTextView == null) {
             responseTextView = (TextView) findViewById(R.id.http_url_response_text_view);
         }
+        if (responseTextViewCurrencyShort == null){
+            responseTextViewCurrencyShort = (TextView) findViewById(R.id.baseCurrencyShortName);
+        }
 
         // This handler is used to wait for child thread message to update server response text in TextView.
         uiUpdater = new Handler() {
@@ -105,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
                 if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
                     Bundle bundle = msg.getData();
                     if (bundle != null) {
-                        String responseText = bundle.getString(KEY_RESPONSE_TEXT);
 
+                        String responseText = bundle.getString(RESPONSE_TEXT);
                         if (responseText != null) {
                             try {
 
@@ -116,9 +125,16 @@ public class MainActivity extends AppCompatActivity {
 
                                 responseTextView.setText(CurrencyRate);
 
+                                JSONObject jsonObjBaseShort = new JSONObject(responseText);
+
+                                CurrencyBaseShortName=(String) jsonObjBaseShort.get("base");
+
+                                responseTextViewCurrencyShort.setText(CurrencyBaseShortName);
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
                     }
                 }
     }}};
@@ -189,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     // Create a bundle object.
                     Bundle bundle = new Bundle();
                     // Put response text in the bundle with the special key.
-                    bundle.putString(KEY_RESPONSE_TEXT, readTextBuf.toString());
+                    bundle.putString(RESPONSE_TEXT, readTextBuf.toString());
                     // Set bundle data in message.
                     message.setData(bundle);
                     // Send message to main thread Handler to process.
