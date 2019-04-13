@@ -1,6 +1,7 @@
 package com.bubus.kursor;
 
 import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static android.widget.Toast.LENGTH_LONG;
+
 public class MainActivity extends AppCompatActivity {
 
     // Debug log tag.
@@ -47,9 +50,10 @@ public class MainActivity extends AppCompatActivity {
     private Spinner firstCurrencySpiner = null;
     private Spinner secondCurrencySpiner = null;
 
-
     private TextView firstCurrencyRate = null;
     private TextView secondCurrencyRate = null;
+
+    private TextView textView = null;
 
     private String firstCurrency = null;
     private String secondCurrency = null;
@@ -57,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private Handler uiUpdater = null;
 
     private String baseCurrency = "";
-    private String Currency = "";
-
 
     private String firstCurrencyShort = null;
     private String secondCurrencyShort = null;
@@ -67,13 +69,16 @@ public class MainActivity extends AppCompatActivity {
     String baseCurrencySymbol = "&base=";
     String regUrlToSend = "";
 
+    MyDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        database = new MyDatabase(this, 1);
+
         initControls();
-
-
 
         mainCurencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -99,6 +104,19 @@ public class MainActivity extends AppCompatActivity {
                 if (i != 0){
                     firstCurrencyShort = adapterView.getItemAtPosition(i).toString();
 
+                    StringBuilder builder = new StringBuilder();
+                    Cursor cursor = database.getAllRates();
+                    while (cursor.moveToNext()){
+                        builder.append(cursor.getString(0));
+                    }
+
+                    if (builder.toString() != null)
+                    {
+
+                    }
+
+                }else{
+                    firstCurrencyRate.setText("0");
                 }
             }
 
@@ -114,7 +132,9 @@ public class MainActivity extends AppCompatActivity {
                 if (i != 0){
                     secondCurrencyShort = adapterView.getItemAtPosition(i).toString();
 
-                }
+                }else{
+                    secondCurrencyRate.setText("0");
+            }
             }
 
             @Override
@@ -130,6 +150,9 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("HandlerLeak")
     private void initControls() {
 
+        if (textView == null) {
+            textView = (TextView) findViewById(R.id.textView);
+        }
         if (mainCurencySpiner == null) {
             mainCurencySpiner = (Spinner) findViewById(R.id.main_Curency_Spiner);
         }
@@ -161,6 +184,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 JSONObject jsonObj = (new JSONObject(responseText)).getJSONObject("rates");
 
+                                database.addRates(jsonObj.toString());
+
                                 firstCurrency=jsonObj.getString(firstCurrencyShort);
 
                                 firstCurrencyRate.setText(firstCurrency);
@@ -168,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
                                 secondCurrency = jsonObj.getString(secondCurrencyShort);
 
                                 secondCurrencyRate.setText(secondCurrency);
-
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
