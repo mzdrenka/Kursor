@@ -7,25 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    // main currency
     <Spinner
-        android:id="@+id/currency_list"
+        android:id="@+id/main_Curency_Spiner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="157dp"
-        android:layout_marginTop="168dp"
-        android:entries="@array/currencyList" />
-
-    <TextView
-
-        android:id="@+id/http_url_response_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="109dp"
-        android:layout_marginEnd="178dp"
-        android:text="0"
-        android:textSize="25dp" />
+        android:layout_alignBottom="@+id/currencyBase"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="0dp"
+        android:entries="@array/baseCurrencyList"
+        android:layout_toEndOf="@+id/currencyBase"/>
 
     <TextView
         android:id="@+id/currencyBase"
@@ -39,19 +30,51 @@
         android:textSize="20dp"
         android:textStyle="bold"/>
 
+    //first currency
+    <Spinner
+        android:id="@+id/first_currency_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/currencyBase"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="33dp"
+        android:entries="@array/currencyList" />
+
     <TextView
-        android:id="@+id/baseCurrencyShortName"
+
+        android:id="@+id/first_currency_rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginTop="30dp"
-        android:layout_toEndOf="@+id/currencyBase"
-        android:text="TEST"
-        android:textSize="20dp"
-        android:textStyle="bold"/>
+        android:layout_marginTop="88dp"
+        android:layout_marginEnd="132dp"
+        android:text="0"
+        android:textSize="25dp" />
 
+    //secound currency
+    <Spinner
+        android:id="@+id/second_currency_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/first_currency_list"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="33dp"
+        android:entries="@array/currencyList" />
+
+    <TextView
+
+        android:id="@+id/second_currency_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/first_currency_rate"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="98dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="132dp"
+        android:text="0"
+        android:textSize="25dp" />
 
 </RelativeLayout>

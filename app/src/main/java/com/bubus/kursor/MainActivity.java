@@ -42,29 +42,30 @@ public class MainActivity extends AppCompatActivity {
     // Request method GET. The value must be uppercase.
     private static final String REQUEST_METHOD_GET = "GET";
 
-    //PLN
-    private static final String PLN_SYMBOL = "PLN";
+    //controls
+    private Spinner mainCurencySpiner = null;
+    private Spinner firstCurrencySpiner = null;
+    private Spinner secondCurrencySpiner = null;
 
-    // Send http request button.
-    private Button requestUrlButtonPLN = null;
 
-    private Spinner currencyList = null;
+    private TextView firstCurrencyRate = null;
+    private TextView secondCurrencyRate = null;
 
-    private TextView responseTextView = null;
-
-    private TextView responseTextViewCurrencyShort = null;
-
-    private String responseTextCurrencyShort = null;
+    private String firstCurrency = null;
+    private String secondCurrency = null;
 
     private Handler uiUpdater = null;
 
+    private String baseCurrency = "";
     private String Currency = "";
 
-    private String CurrencyRate = null;
 
-    private String CurrencyBaseShortName = null;
+    private String firstCurrencyShort = null;
+    private String secondCurrencyShort = null;
 
     final String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee";
+    String baseCurrencySymbol = "&base=";
+    String regUrlToSend = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,14 +74,45 @@ public class MainActivity extends AppCompatActivity {
         initControls();
 
 
-        currencyList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        mainCurencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == 0) {
+                if (i != 0){
+                    baseCurrency = adapterView.getItemAtPosition(i).toString();
 
-                } else {
-                    Currency = adapterView.getItemAtPosition(i).toString();
-                    startSendHttpRequestThread(reqUrl);
+                    regUrlToSend = reqUrl + baseCurrencySymbol + baseCurrency;
+
+                    startSendHttpRequestThread(regUrlToSend);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        firstCurrencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i != 0){
+                    firstCurrencyShort = adapterView.getItemAtPosition(i).toString();
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        secondCurrencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i != 0){
+                    secondCurrencyShort = adapterView.getItemAtPosition(i).toString();
 
                 }
             }
@@ -97,15 +129,23 @@ public class MainActivity extends AppCompatActivity {
     // Initialize app controls.
     @SuppressLint("HandlerLeak")
     private void initControls() {
-        if (currencyList == null) {
-            currencyList = (Spinner) findViewById(R.id.currency_list);
+
+        if (mainCurencySpiner == null) {
+            mainCurencySpiner = (Spinner) findViewById(R.id.main_Curency_Spiner);
         }
-        if (responseTextView == null) {
-            responseTextView = (TextView) findViewById(R.id.http_url_response_text_view);
+        if (firstCurrencySpiner == null) {
+            firstCurrencySpiner = (Spinner) findViewById(R.id.first_currency_list);
         }
-        if (responseTextViewCurrencyShort == null){
-            responseTextViewCurrencyShort = (TextView) findViewById(R.id.baseCurrencyShortName);
+        if (secondCurrencySpiner == null) {
+            secondCurrencySpiner = (Spinner) findViewById(R.id.second_currency_list);
         }
+        if (firstCurrencyRate == null) {
+            firstCurrencyRate = (TextView) findViewById(R.id.first_currency_rate);
+        }
+        if (secondCurrencyRate == null) {
+            secondCurrencyRate = (TextView) findViewById(R.id.second_currency_rate);
+        }
+
 
         // This handler is used to wait for child thread message to update server response text in TextView.
         uiUpdater = new Handler() {
@@ -121,15 +161,14 @@ public class MainActivity extends AppCompatActivity {
 
                                 JSONObject jsonObj = (new JSONObject(responseText)).getJSONObject("rates");
 
-                                CurrencyRate=jsonObj.getString(Currency);
+                                firstCurrency=jsonObj.getString(firstCurrencyShort);
 
-                                responseTextView.setText(CurrencyRate);
+                                firstCurrencyRate.setText(firstCurrency);
 
-                                JSONObject jsonObjBaseShort = new JSONObject(responseText);
+                                secondCurrency = jsonObj.getString(secondCurrencyShort);
 
-                                CurrencyBaseShortName=(String) jsonObjBaseShort.get("base");
+                                secondCurrencyRate.setText(secondCurrency);
 
-                                responseTextViewCurrencyShort.setText(CurrencyBaseShortName);
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -162,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     // Create a URL object use page url.
-                    URL url = new URL(reqUrl);
+                    URL url = new URL(regUrlToSend);
 
                     // Open http connection to web server.
                     httpConn = (HttpURLConnection)url.openConnection();
