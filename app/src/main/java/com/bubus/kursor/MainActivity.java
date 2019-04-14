@@ -6,7 +6,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.webkit.URLUtil;
@@ -20,6 +24,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,6 +33,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -51,9 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private Spinner secondCurrencySpiner = null;
 
     private TextView firstCurrencyRate = null;
-    private TextView secondCurrencyRate = null;
+    private TextView firstCurrencyTotal = null;
+    private String firstCurrencyTotalString = null;
 
-    private TextView textView = null;
+    private TextView secondCurrencyRate = null;
+    private TextView secondCurrencyTotal = null;
+    private String secondCurrencyTotalString = null;
+
+    private EditText currencyBaseTotalAmount = null;
 
     private String firstCurrency = null;
     private String secondCurrency = null;
@@ -65,11 +79,17 @@ public class MainActivity extends AppCompatActivity {
     private String firstCurrencyShort = null;
     private String secondCurrencyShort = null;
 
+
     final String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee";
     String baseCurrencySymbol = "&base=";
     String regUrlToSend = "";
 
     MyDatabase database;
+
+    DecimalFormat df = new DecimalFormat("#.####");
+    DecimalFormat df2 = new DecimalFormat("#.##");
+
+    NumberFormat doubleFormat = NumberFormat.getInstance(Locale.FRANCE);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject json = new JSONObject(builder.toString());
                             firstCurrency = json.getString(firstCurrencyShort);
-                            firstCurrencyRate.setText(firstCurrency);
+                            String firstCurrencyDouble = df.format(Double.parseDouble(firstCurrency));
+                            firstCurrencyRate.setText(firstCurrencyDouble);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -132,6 +153,54 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        currencyBaseTotalAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+
+                if (s.length() > 0){
+                    try {
+                        String baseAmount = currencyBaseTotalAmount.getText().toString();
+                        double baseAmountDouble = Double.parseDouble(baseAmount);
+                        //first currency changes
+                        String firstCurrRate = firstCurrencyRate.getText().toString();
+                        Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
+                        double firstCurrDouble = firstCurrRateNumber.doubleValue();
+                        double firstCurrencyTotal = baseAmountDouble * firstCurrDouble;
+                        firstCurrencyTotalString = df2.format(firstCurrencyTotal);
+
+                        //secound curency changes
+                        String secCurrRate = secondCurrencyRate.getText().toString();
+                        Number secCurrNumber = doubleFormat.parse(secCurrRate);
+                        double secCurrDouble = secCurrNumber.doubleValue();
+                        double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
+                        secondCurrencyTotalString = df2.format(secondCurrencyTotal);
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    firstCurrencyTotal.setText(firstCurrencyTotalString);
+                    secondCurrencyTotal.setText(secondCurrencyTotalString);
+
+                }else{
+                    firstCurrencyTotal.setText("0");
+                    secondCurrencyTotal.setText("0");
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
             }
         });
@@ -151,9 +220,11 @@ public class MainActivity extends AppCompatActivity {
                     if (builder.toString() != null)
                     {
                         try {
+
                             JSONObject json = new JSONObject(builder.toString());
                             secondCurrency = json.getString(secondCurrencyShort);
-                            secondCurrencyRate.setText(secondCurrency);
+                            String secondCurrencyDouble = df.format(Double.parseDouble(secondCurrency));
+                            secondCurrencyRate.setText(secondCurrencyDouble);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -195,6 +266,18 @@ public class MainActivity extends AppCompatActivity {
             secondCurrencyRate = (TextView) findViewById(R.id.second_currency_rate);
         }
 
+        if (secondCurrencyTotal == null) {
+            secondCurrencyTotal = (TextView) findViewById(R.id.secoundCurrencyTotal);
+        }
+
+        if (firstCurrencyTotal == null) {
+            firstCurrencyTotal = (TextView) findViewById(R.id.firstCurrencyTotal);
+        }
+
+        if (currencyBaseTotalAmount == null) {
+            currencyBaseTotalAmount = (EditText) findViewById(R.id.currencyBaseTotalAmount);
+        }
+
 
         // This handler is used to wait for child thread message to update server response text in TextView.
         uiUpdater = new Handler() {
@@ -202,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
                     Bundle bundle = msg.getData();
+
                     if (bundle != null) {
 
                         String responseText = bundle.getString(RESPONSE_TEXT);
@@ -216,15 +300,27 @@ public class MainActivity extends AppCompatActivity {
 
                                     firstCurrency=jsonObj.getString(firstCurrencyShort);
 
-                                    firstCurrencyRate.setText(firstCurrency);
+                                    String firstCurrencyDouble = df.format(Double.parseDouble(firstCurrency));
+
+                                    firstCurrencyRate.setText(firstCurrencyDouble);
 
                                 }else{
                                     firstCurrencyRate.setText("0");
                                 }
 
-                                secondCurrency = jsonObj.getString(secondCurrencyShort);
+                                if(jsonObj.getString(secondCurrencyShort) != null) {
 
-                                secondCurrencyRate.setText(secondCurrency);
+                                    secondCurrency = jsonObj.getString(secondCurrencyShort);
+
+                                    String secondCurrencyDouble = df.format(Double.parseDouble(secondCurrency));
+
+                                   // String secondCurrencyDoubleString = "" + df.format(secondCurrencyDouble);
+
+                                    secondCurrencyRate.setText(secondCurrencyDouble);
+
+                                }else{
+                                    secondCurrencyRate.setText("0");
+                                }
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
