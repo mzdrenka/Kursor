@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
         database = new MyDatabase(this, 1);
 
+        database.deleteAllRates();
+
         initControls();
 
         mainCurencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -89,6 +91,10 @@ public class MainActivity extends AppCompatActivity {
                     regUrlToSend = reqUrl + baseCurrencySymbol + baseCurrency;
 
                     startSendHttpRequestThread(regUrlToSend);
+                }else{
+                    database.deleteAllRates();
+                    firstCurrencyRate.setText("0");
+                    secondCurrencyRate.setText("0");
                 }
             }
 
@@ -112,11 +118,15 @@ public class MainActivity extends AppCompatActivity {
 
                     if (builder.toString() != null)
                     {
+                        try {
+                            JSONObject json = new JSONObject(builder.toString());
+                            firstCurrency = json.getString(firstCurrencyShort);
+                            firstCurrencyRate.setText(firstCurrency);
 
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-
-                }else{
-                    firstCurrencyRate.setText("0");
                 }
             }
 
@@ -131,6 +141,25 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i != 0){
                     secondCurrencyShort = adapterView.getItemAtPosition(i).toString();
+
+                    StringBuilder builder = new StringBuilder();
+                    Cursor cursor = database.getAllRates();
+                    while (cursor.moveToNext()){
+                        builder.append(cursor.getString(0));
+                    }
+
+                    if (builder.toString() != null)
+                    {
+                        try {
+                            JSONObject json = new JSONObject(builder.toString());
+                            secondCurrency = json.getString(secondCurrencyShort);
+                            secondCurrencyRate.setText(secondCurrency);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
 
                 }else{
                     secondCurrencyRate.setText("0");
@@ -150,9 +179,6 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("HandlerLeak")
     private void initControls() {
 
-        if (textView == null) {
-            textView = (TextView) findViewById(R.id.textView);
-        }
         if (mainCurencySpiner == null) {
             mainCurencySpiner = (Spinner) findViewById(R.id.main_Curency_Spiner);
         }
@@ -186,9 +212,15 @@ public class MainActivity extends AppCompatActivity {
 
                                 database.addRates(jsonObj.toString());
 
-                                firstCurrency=jsonObj.getString(firstCurrencyShort);
+                                if (jsonObj.getString(firstCurrencyShort) != null){
 
-                                firstCurrencyRate.setText(firstCurrency);
+                                    firstCurrency=jsonObj.getString(firstCurrencyShort);
+
+                                    firstCurrencyRate.setText(firstCurrency);
+
+                                }else{
+                                    firstCurrencyRate.setText("0");
+                                }
 
                                 secondCurrency = jsonObj.getString(secondCurrencyShort);
 
@@ -205,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /* Start a thread to send http request to web server use HttpURLConnection object. */
-    private void startSendHttpRequestThread(final String reqUrl)
+    private void startSendHttpRequestThread(final String regUrlToSend)
     {
         Thread sendHttpRequestThread = new Thread()
         {

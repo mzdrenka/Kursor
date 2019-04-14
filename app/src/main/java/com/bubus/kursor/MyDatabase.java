@@ -36,4 +36,9 @@ public class MyDatabase extends SQLiteOpenHelper {
         return db.query("rates",  null, null, null, null, null, null);
     }
 
+    public void deleteAllRates() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("rates",null,null);
+    }
+
 }
