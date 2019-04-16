@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
     private String firstCurrencyShort = null;
     private String secondCurrencyShort = null;
 
-
     final String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee";
     String baseCurrencySymbol = "&base=";
     String regUrlToSend = "";
@@ -111,15 +110,66 @@ public class MainActivity extends AppCompatActivity {
                     regUrlToSend = reqUrl + baseCurrencySymbol + baseCurrency;
 
                     startSendHttpRequestThread(regUrlToSend);
-                }else{
+
+                 }else{
                     database.deleteAllRates();
                     firstCurrencyRate.setText("0");
                     secondCurrencyRate.setText("0");
+                    firstCurrencyTotal.setText("0");
+                    secondCurrencyTotal.setText("0");
+
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        currencyBaseTotalAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                if (s.length() > 0){
+                    try {
+                        String baseAmount = currencyBaseTotalAmount.getText().toString();
+                        double baseAmountDouble = Double.parseDouble(baseAmount);
+                        //first currency changes
+                        String firstCurrRate = firstCurrencyRate.getText().toString();
+                        Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
+                        double firstCurrDouble = firstCurrRateNumber.doubleValue();
+                        double firstCurrencyTotal = baseAmountDouble * firstCurrDouble;
+                        firstCurrencyTotalString = df2.format(firstCurrencyTotal);
+
+                        //secound curency changes
+                        String secCurrRate = secondCurrencyRate.getText().toString();
+                        Number secCurrNumber = doubleFormat.parse(secCurrRate);
+                        double secCurrDouble = secCurrNumber.doubleValue();
+                        double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
+                        secondCurrencyTotalString = df2.format(secondCurrencyTotal);
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    firstCurrencyTotal.setText(firstCurrencyTotalString);
+                    secondCurrencyTotal.setText(secondCurrencyTotalString);
+
+
+                }else{
+                    firstCurrencyTotal.setText("0");
+                    secondCurrencyTotal.setText("0");
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
             }
         });
@@ -147,60 +197,30 @@ public class MainActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                     if(currencyBaseTotalAmount.length() >0){
+                         try {
+                             String baseAmount = currencyBaseTotalAmount.getText().toString();
+                             double baseAmountDouble = Double.parseDouble(baseAmount);
+                             //first currency changes
+                             String firstCurrRate = firstCurrencyRate.getText().toString();
+                             Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
+                             double firstCurrDouble = firstCurrRateNumber.doubleValue();
+                             double firstCurrencyTotal = baseAmountDouble * firstCurrDouble;
+                             firstCurrencyTotalString = df2.format(firstCurrencyTotal);
+                         } catch (ParseException e) {
+                             e.printStackTrace();
+                         } firstCurrencyTotal.setText(firstCurrencyTotalString);
+                     }
                     }
+                }else {
+                    firstCurrencyRate.setText("0");
+                    firstCurrencyShort = null;
+                    firstCurrencyTotal.setText("0");
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        currencyBaseTotalAmount.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
-
-                if (s.length() > 0){
-                    try {
-                        String baseAmount = currencyBaseTotalAmount.getText().toString();
-                        double baseAmountDouble = Double.parseDouble(baseAmount);
-                        //first currency changes
-                        String firstCurrRate = firstCurrencyRate.getText().toString();
-                        Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
-                        double firstCurrDouble = firstCurrRateNumber.doubleValue();
-                        double firstCurrencyTotal = baseAmountDouble * firstCurrDouble;
-                        firstCurrencyTotalString = df2.format(firstCurrencyTotal);
-
-                        //secound curency changes
-                        String secCurrRate = secondCurrencyRate.getText().toString();
-                        Number secCurrNumber = doubleFormat.parse(secCurrRate);
-                        double secCurrDouble = secCurrNumber.doubleValue();
-                        double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
-                        secondCurrencyTotalString = df2.format(secondCurrencyTotal);
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    firstCurrencyTotal.setText(firstCurrencyTotalString);
-                    secondCurrencyTotal.setText(secondCurrencyTotalString);
-
-                }else{
-                    firstCurrencyTotal.setText("0");
-                    secondCurrencyTotal.setText("0");
-                }
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
 
             }
         });
@@ -229,12 +249,27 @@ public class MainActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        try{
+                            String baseAmount = currencyBaseTotalAmount.getText().toString();
+                            double baseAmountDouble = Double.parseDouble(baseAmount);
 
+                            String secCurrRate = secondCurrencyRate.getText().toString();
+                            Number secCurrNumber = doubleFormat.parse(secCurrRate);
+                            double secCurrDouble = secCurrNumber.doubleValue();
+                            double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
+                            secondCurrencyTotalString = df2.format(secondCurrencyTotal);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }  secondCurrencyTotal.setText(secondCurrencyTotalString);
                     }
 
                 }else{
                     secondCurrencyRate.setText("0");
+                    secondCurrencyShort = null;
+                    secondCurrencyTotal.setText("0");
             }
+
             }
 
             @Override
@@ -304,6 +339,21 @@ public class MainActivity extends AppCompatActivity {
 
                                     firstCurrencyRate.setText(firstCurrencyDouble);
 
+                                    if (currencyBaseTotalAmount.length() > 0){
+                                        try {
+                                        String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                        double baseAmountDouble = Double.parseDouble(baseAmount);
+                                        //first currency changes
+                                        String firstCurrRate = firstCurrencyRate.getText().toString();
+                                        Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
+                                        double firstCurrDouble = firstCurrRateNumber.doubleValue();
+                                        double firstCurrencyTotal = baseAmountDouble * firstCurrDouble;
+                                        firstCurrencyTotalString = df2.format(firstCurrencyTotal);
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }firstCurrencyTotal.setText(firstCurrencyTotalString);
+                                    }else firstCurrencyTotal.setText("0");
                                 }else{
                                     firstCurrencyRate.setText("0");
                                 }
@@ -314,9 +364,24 @@ public class MainActivity extends AppCompatActivity {
 
                                     String secondCurrencyDouble = df.format(Double.parseDouble(secondCurrency));
 
-                                   // String secondCurrencyDoubleString = "" + df.format(secondCurrencyDouble);
-
                                     secondCurrencyRate.setText(secondCurrencyDouble);
+
+                                    if (currencyBaseTotalAmount.length() > 0){
+                                        try {
+
+                                            String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                            double baseAmountDouble = Double.parseDouble(baseAmount);
+
+                                            String secCurrRate = secondCurrencyRate.getText().toString();
+                                            Number secCurrNumber = doubleFormat.parse(secCurrRate);
+                                            double secCurrDouble = secCurrNumber.doubleValue();
+                                            double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
+                                            secondCurrencyTotalString = df2.format(secondCurrencyTotal);
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        } secondCurrencyTotal.setText(secondCurrencyTotalString);
+                                        }
 
                                 }else{
                                     secondCurrencyRate.setText("0");
