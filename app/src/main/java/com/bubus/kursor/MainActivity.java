@@ -56,45 +56,51 @@ public class MainActivity extends AppCompatActivity {
 
     //controls
     private Spinner mainCurencySpiner = null;
-    private Spinner firstCurrencySpiner = null;
-    private Spinner secondCurrencySpiner = null;
 
     //first currency
     private TextView firstCurrencyRate = null;
     private TextView firstCurrencyTotal = null;
+    private Spinner firstCurrencySpiner = null;
     private String firstCurrencyTotalString = null;
+    private String firstCurrency = null;
+    private String firstCurrencyShort = null;
 
     //secound currency
     private TextView secondCurrencyRate = null;
     private TextView secondCurrencyTotal = null;
+    private Spinner secondCurrencySpiner = null;
     private String secondCurrencyTotalString = null;
+    private String secondCurrency = null;
+    private String secondCurrencyShort = null;
 
     //third currency
     private TextView thirdCurrencyRate = null;
     private TextView thirdCurrencyTotal = null;
+    private Spinner thirdCurrencySpiner = null;
     private String thirdCurrencyTotalString = null;
+    private String thirdCurrency = null;
+    private String thirdCurrencyShort = null;
 
     //fourth currency
     private TextView fourthCurrencyRate = null;
     private TextView fourthCurrencyTotal = null;
+    private Spinner fourthCurrencySpiner = null;
     private String fourthCurrencyTotalString = null;
+    private String fourthCurrency = null;
+    private String fourthCurrencyShort = null;
 
     //fifth currency
     private TextView fifthCurrencyRate = null;
     private TextView fifthCurrencyTotal = null;
+    private Spinner fifthCurrencySpiner = null;
     private String fifthCurrencyTotalString = null;
+    private String fifthCurrency = null;
+    private String fifthhCurrencyShort = null;
 
     private EditText currencyBaseTotalAmount = null;
-
-    private String firstCurrency = null;
-    private String secondCurrency = null;
-
     private Handler uiUpdater = null;
 
     private String baseCurrency = "";
-
-    private String firstCurrencyShort = null;
-    private String secondCurrencyShort = null;
 
     final String reqUrl = "http://data.fixer.io/api/latest?access_key=dec9cb0c9c4e729d0aa732ccbeb955ee";
     String baseCurrencySymbol = "&base=";
@@ -213,6 +219,9 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     firstCurrencyTotal.setText("0");
                     secondCurrencyTotal.setText("0");
+                    thirdCurrencyTotal.setText("0");
+                    fourthCurrencyTotal.setText("0");
+                    fifthCurrencyTotal.setText("0");
                 }
 
             }
@@ -327,6 +336,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        thirdCurrencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i != 0){
+                    thirdCurrencyShort = adapterView.getItemAtPosition(i).toString();
+
+                    StringBuilder builder = new StringBuilder();
+                    Cursor cursor = database.getAllRates();
+                    while (cursor.moveToNext()){
+                        builder.append(cursor.getString(0));
+                    }
+
+                    if (builder.toString() != null)
+                    {
+                        try {
+
+                            JSONObject json = new JSONObject(builder.toString());
+                            thirdCurrency = json.getString(thirdCurrencyShort);
+                            String thirdCurrencyDouble = df.format(Double.parseDouble(thirdCurrency));
+                            secondCurrencyRate.setText(thirdCurrencyDouble);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try{
+                            String baseAmount = currencyBaseTotalAmount.getText().toString();
+                            double baseAmountDouble = Double.parseDouble(baseAmount);
+
+                            String thrCurrRate = thirdCurrencyRate.getText().toString();
+                            Number thrCurrNumber = doubleFormat.parse(thrCurrRate);
+                            double thrCurrDouble = thrCurrNumber.doubleValue();
+                            double thirdCurrencyTotal = baseAmountDouble * thrCurrDouble;
+                            thirdCurrencyTotalString = df2.format(thirdCurrencyTotal);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }  thirdCurrencyTotal.setText(thirdCurrencyTotalString);
+                    }
+
+                }else{
+                    thirdCurrencyRate.setText("0");
+                    thirdCurrencyShort = null;
+                    thirdCurrencyTotal.setText("0");
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
 
     }
 
@@ -342,6 +405,8 @@ public class MainActivity extends AppCompatActivity {
             currencyBaseTotalAmount = (EditText) findViewById(R.id.currencyBaseTotalAmount);
         }
 
+        //first
+
         if (firstCurrencySpiner == null) {
             firstCurrencySpiner = (Spinner) findViewById(R.id.first_currency_list);
         }
@@ -353,6 +418,8 @@ public class MainActivity extends AppCompatActivity {
         if (firstCurrencyTotal == null) {
             firstCurrencyTotal = (TextView) findViewById(R.id.firstCurrencyTotal);
         }
+
+        //secound
 
         if (secondCurrencySpiner == null) {
             secondCurrencySpiner = (Spinner) findViewById(R.id.second_currency_list);
@@ -366,6 +433,12 @@ public class MainActivity extends AppCompatActivity {
             secondCurrencyTotal = (TextView) findViewById(R.id.secoundCurrencyTotal);
         }
 
+        //third
+
+        if (thirdCurrencySpiner == null) {
+            thirdCurrencySpiner = (Spinner) findViewById(R.id.third_currency_list);
+        }
+
         if (thirdCurrencyRate == null ) {
             thirdCurrencyRate = (TextView) findViewById(R.id.third_currency_rate);
         }
@@ -374,12 +447,24 @@ public class MainActivity extends AppCompatActivity {
             thirdCurrencyTotal = (TextView) findViewById(R.id.thirdCurrencyTotal);
         }
 
+        //fourth
+
+        if (fourthCurrencySpiner == null) {
+            fourthCurrencySpiner = (Spinner) findViewById(R.id.fourth_currency_list);
+        }
+
         if (fourthCurrencyRate == null ) {
             fourthCurrencyRate = (TextView) findViewById(R.id.fourth_currency_rate);
         }
 
         if (fourthCurrencyTotal == null) {
             fourthCurrencyTotal = (TextView) findViewById(R.id.fourthCurrencyTotal);
+        }
+
+        //fifth
+
+        if (fifthCurrencySpiner == null) {
+            fifthCurrencySpiner = (Spinner) findViewById(R.id.fifth_currency_list);
         }
 
         if (fifthCurrencyRate == null ) {
