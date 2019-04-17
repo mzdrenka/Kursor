@@ -59,13 +59,27 @@ public class MainActivity extends AppCompatActivity {
     private Spinner firstCurrencySpiner = null;
     private Spinner secondCurrencySpiner = null;
 
+    //first currency
     private TextView firstCurrencyRate = null;
     private TextView firstCurrencyTotal = null;
     private String firstCurrencyTotalString = null;
 
+    //secound currency
     private TextView secondCurrencyRate = null;
     private TextView secondCurrencyTotal = null;
     private String secondCurrencyTotalString = null;
+
+    //third currency
+    private TextView thirdCurrencyRate = null;
+    private TextView thirdCurrencyTotal = null;
+    private String thirdCurrencyTotalString = null;
+
+    //fourth currency
+    private TextView fourthCurrencyRate = null;
+    private TextView fourthCurrencyTotal = null;
+    private String fourthCurrencyTotalString = null;
+
+
 
     private EditText currencyBaseTotalAmount = null;
 
@@ -288,15 +302,27 @@ public class MainActivity extends AppCompatActivity {
         if (mainCurencySpiner == null) {
             mainCurencySpiner = (Spinner) findViewById(R.id.main_Curency_Spiner);
         }
+
+        if (currencyBaseTotalAmount == null) {
+            currencyBaseTotalAmount = (EditText) findViewById(R.id.currencyBaseTotalAmount);
+        }
+
         if (firstCurrencySpiner == null) {
             firstCurrencySpiner = (Spinner) findViewById(R.id.first_currency_list);
         }
-        if (secondCurrencySpiner == null) {
-            secondCurrencySpiner = (Spinner) findViewById(R.id.second_currency_list);
-        }
+
         if (firstCurrencyRate == null) {
             firstCurrencyRate = (TextView) findViewById(R.id.first_currency_rate);
         }
+
+        if (firstCurrencyTotal == null) {
+            firstCurrencyTotal = (TextView) findViewById(R.id.firstCurrencyTotal);
+        }
+
+        if (secondCurrencySpiner == null) {
+            secondCurrencySpiner = (Spinner) findViewById(R.id.second_currency_list);
+        }
+
         if (secondCurrencyRate == null) {
             secondCurrencyRate = (TextView) findViewById(R.id.second_currency_rate);
         }
@@ -305,14 +331,21 @@ public class MainActivity extends AppCompatActivity {
             secondCurrencyTotal = (TextView) findViewById(R.id.secoundCurrencyTotal);
         }
 
-        if (firstCurrencyTotal == null) {
-            firstCurrencyTotal = (TextView) findViewById(R.id.firstCurrencyTotal);
+        if (thirdCurrencyRate == null ) {
+            thirdCurrencyRate = (TextView) findViewById(R.id.third_currency_rate);
         }
 
-        if (currencyBaseTotalAmount == null) {
-            currencyBaseTotalAmount = (EditText) findViewById(R.id.currencyBaseTotalAmount);
+        if (thirdCurrencyTotal == null) {
+            thirdCurrencyTotal = (TextView) findViewById(R.id.third_currency_rate);
         }
 
+        if (fourthCurrencyRate == null ) {
+            fourthCurrencyRate = (TextView) findViewById(R.id.fourth_currency_rate);
+        }
+
+        if (fourthCurrencyTotal == null) {
+            fourthCurrencyTotal = (TextView) findViewById(R.id.fourth_currency_rate);
+        }
 
         // This handler is used to wait for child thread message to update server response text in TextView.
         uiUpdater = new Handler() {
