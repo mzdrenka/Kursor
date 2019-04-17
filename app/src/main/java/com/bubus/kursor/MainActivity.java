@@ -295,8 +295,7 @@ public class MainActivity extends AppCompatActivity {
                         builder.append(cursor.getString(0));
                     }
 
-                    if (builder.toString() != null)
-                    {
+                    if (builder.toString() != null) {
                         try {
 
                             JSONObject json = new JSONObject(builder.toString());
@@ -307,21 +306,23 @@ public class MainActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        try{
-                            String baseAmount = currencyBaseTotalAmount.getText().toString();
-                            double baseAmountDouble = Double.parseDouble(baseAmount);
+                        if (currencyBaseTotalAmount.length() > 0) {
+                            try {
+                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                double baseAmountDouble = Double.parseDouble(baseAmount);
 
-                            String secCurrRate = secondCurrencyRate.getText().toString();
-                            Number secCurrNumber = doubleFormat.parse(secCurrRate);
-                            double secCurrDouble = secCurrNumber.doubleValue();
-                            double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
-                            secondCurrencyTotalString = df2.format(secondCurrencyTotal);
+                                String secCurrRate = secondCurrencyRate.getText().toString();
+                                Number secCurrNumber = doubleFormat.parse(secCurrRate);
+                                double secCurrDouble = secCurrNumber.doubleValue();
+                                double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
+                                secondCurrencyTotalString = df2.format(secondCurrencyTotal);
 
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }  secondCurrencyTotal.setText(secondCurrencyTotalString);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            secondCurrencyTotal.setText(secondCurrencyTotalString);
+                        }
                     }
-
                 }else{
                     secondCurrencyRate.setText("0");
                     secondCurrencyShort = null;
@@ -335,60 +336,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        thirdCurrencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i != 0){
-                    thirdCurrencyShort = adapterView.getItemAtPosition(i).toString();
-
-                    StringBuilder builder = new StringBuilder();
-                    Cursor cursor = database.getAllRates();
-                    while (cursor.moveToNext()){
-                        builder.append(cursor.getString(0));
-                    }
-
-                    if (builder.toString() != null)
-                    {
-                        try {
-
-                            JSONObject json = new JSONObject(builder.toString());
-                            thirdCurrency = json.getString(thirdCurrencyShort);
-                            String thirdCurrencyDouble = df.format(Double.parseDouble(thirdCurrency));
-                            secondCurrencyRate.setText(thirdCurrencyDouble);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        try{
-                            String baseAmount = currencyBaseTotalAmount.getText().toString();
-                            double baseAmountDouble = Double.parseDouble(baseAmount);
-
-                            String thrCurrRate = thirdCurrencyRate.getText().toString();
-                            Number thrCurrNumber = doubleFormat.parse(thrCurrRate);
-                            double thrCurrDouble = thrCurrNumber.doubleValue();
-                            double thirdCurrencyTotal = baseAmountDouble * thrCurrDouble;
-                            thirdCurrencyTotalString = df2.format(thirdCurrencyTotal);
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }  thirdCurrencyTotal.setText(thirdCurrencyTotalString);
-                    }
-
-                }else{
-                    thirdCurrencyRate.setText("0");
-                    thirdCurrencyShort = null;
-                    thirdCurrencyTotal.setText("0");
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
 
 
     }
@@ -405,8 +352,6 @@ public class MainActivity extends AppCompatActivity {
             currencyBaseTotalAmount = (EditText) findViewById(R.id.currencyBaseTotalAmount);
         }
 
-        //first
-
         if (firstCurrencySpiner == null) {
             firstCurrencySpiner = (Spinner) findViewById(R.id.first_currency_list);
         }
@@ -419,8 +364,6 @@ public class MainActivity extends AppCompatActivity {
             firstCurrencyTotal = (TextView) findViewById(R.id.firstCurrencyTotal);
         }
 
-        //secound
-
         if (secondCurrencySpiner == null) {
             secondCurrencySpiner = (Spinner) findViewById(R.id.second_currency_list);
         }
@@ -432,8 +375,6 @@ public class MainActivity extends AppCompatActivity {
         if (secondCurrencyTotal == null) {
             secondCurrencyTotal = (TextView) findViewById(R.id.secoundCurrencyTotal);
         }
-
-        //third
 
         if (thirdCurrencySpiner == null) {
             thirdCurrencySpiner = (Spinner) findViewById(R.id.third_currency_list);
