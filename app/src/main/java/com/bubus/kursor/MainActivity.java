@@ -79,7 +79,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView fourthCurrencyTotal = null;
     private String fourthCurrencyTotalString = null;
 
-
+    //fifth currency
+    private TextView fifthCurrencyRate = null;
+    private TextView fifthCurrencyTotal = null;
+    private String fifthCurrencyTotalString = null;
 
     private EditText currencyBaseTotalAmount = null;
 
@@ -129,8 +132,15 @@ public class MainActivity extends AppCompatActivity {
                     database.deleteAllRates();
                     firstCurrencyRate.setText("0");
                     secondCurrencyRate.setText("0");
+                    thirdCurrencyRate.setText("0");
+                    fourthCurrencyRate.setText("0");
+                    fifthCurrencyRate.setText("0");
+
                     firstCurrencyTotal.setText("0");
                     secondCurrencyTotal.setText("0");
+                    thirdCurrencyTotal.setText("0");
+                    fourthCurrencyTotal.setText("0");
+                    fifthCurrencyTotal.setText("0");
 
                 }
             }
@@ -154,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         String baseAmount = currencyBaseTotalAmount.getText().toString();
                         double baseAmountDouble = Double.parseDouble(baseAmount);
+
                         //first currency changes
                         String firstCurrRate = firstCurrencyRate.getText().toString();
                         Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
@@ -168,12 +179,36 @@ public class MainActivity extends AppCompatActivity {
                         double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
                         secondCurrencyTotalString = df2.format(secondCurrencyTotal);
 
+                        //third curency changes
+                        String thrCurrRate = thirdCurrencyRate.getText().toString();
+                        Number thrCurrNumber = doubleFormat.parse(thrCurrRate);
+                        double thrCurrDouble = thrCurrNumber.doubleValue();
+                        double thirdCurrencyTotal = baseAmountDouble * thrCurrDouble;
+                        thirdCurrencyTotalString = df2.format(thirdCurrencyTotal);
+
+                        //fourth currency changes
+                        String fourCurrRate = fourthCurrencyRate.getText().toString();
+                        Number fourCurrNumber = doubleFormat.parse(fourCurrRate);
+                        double fourCurrDouble = fourCurrNumber.doubleValue();
+                        double fourCurrencyTotal = baseAmountDouble * fourCurrDouble;
+                        fourthCurrencyTotalString = df2.format(fourCurrencyTotal);
+
+                        //fifth currency changes
+                        String fiftCurrRate = fourthCurrencyRate.getText().toString();
+                        Number fiftCurrNumber = doubleFormat.parse(fiftCurrRate);
+                        double fiftCurrDouble = fiftCurrNumber.doubleValue();
+                        double fiftCurrencyTotal = baseAmountDouble * fiftCurrDouble;
+                        fifthCurrencyTotalString = df2.format(fiftCurrencyTotal);
+
+
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
                     firstCurrencyTotal.setText(firstCurrencyTotalString);
                     secondCurrencyTotal.setText(secondCurrencyTotalString);
-
+                    thirdCurrencyTotal.setText(thirdCurrencyTotalString);
+                    fourthCurrencyTotal.setText(fourthCurrencyTotalString);
+                    fifthCurrencyTotal.setText(fifthCurrencyTotalString);
 
                 }else{
                     firstCurrencyTotal.setText("0");
@@ -336,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (thirdCurrencyTotal == null) {
-            thirdCurrencyTotal = (TextView) findViewById(R.id.third_currency_rate);
+            thirdCurrencyTotal = (TextView) findViewById(R.id.thirdCurrencyTotal);
         }
 
         if (fourthCurrencyRate == null ) {
@@ -344,7 +379,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (fourthCurrencyTotal == null) {
-            fourthCurrencyTotal = (TextView) findViewById(R.id.fourth_currency_rate);
+            fourthCurrencyTotal = (TextView) findViewById(R.id.fourthCurrencyTotal);
+        }
+
+        if (fifthCurrencyRate == null ) {
+            fifthCurrencyRate = (TextView) findViewById(R.id.fifth_currency_rate);
+        }
+
+        if (fifthCurrencyTotal == null) {
+            fifthCurrencyTotal = (TextView) findViewById(R.id.fifthCurrencyTotal);
         }
 
         // This handler is used to wait for child thread message to update server response text in TextView.
