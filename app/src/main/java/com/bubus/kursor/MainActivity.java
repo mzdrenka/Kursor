@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -98,7 +100,12 @@ public class MainActivity extends AppCompatActivity {
     private String fifthhCurrencyShort = null;
 
     private EditText currencyBaseTotalAmount = null;
-    private Handler uiUpdater = null;
+
+    private Handler uiUpdater1 = null;
+    private Handler uiUpdater2 = null;
+    private Handler uiUpdater3 = null;
+    private Handler uiUpdater4 = null;
+    private Handler uiUpdater5 = null;
 
     private String baseCurrency = "";
 
@@ -169,7 +176,8 @@ public class MainActivity extends AppCompatActivity {
                 if (s.length() > 0){
                     try {
                         String baseAmount = currencyBaseTotalAmount.getText().toString();
-                        double baseAmountDouble = Double.parseDouble(baseAmount);
+                        Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                        double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
 
                         //first currency changes
                         String firstCurrRate = firstCurrencyRate.getText().toString();
@@ -258,7 +266,9 @@ public class MainActivity extends AppCompatActivity {
                      if(currencyBaseTotalAmount.length() >0){
                          try {
                              String baseAmount = currencyBaseTotalAmount.getText().toString();
-                             double baseAmountDouble = Double.parseDouble(baseAmount);
+                             Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                             double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+
                              //first currency changes
                              String firstCurrRate = firstCurrencyRate.getText().toString();
                              Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
@@ -309,7 +319,8 @@ public class MainActivity extends AppCompatActivity {
                         if (currencyBaseTotalAmount.length() > 0) {
                             try {
                                 String baseAmount = currencyBaseTotalAmount.getText().toString();
-                                double baseAmountDouble = Double.parseDouble(baseAmount);
+                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
 
                                 String secCurrRate = secondCurrencyRate.getText().toString();
                                 Number secCurrNumber = doubleFormat.parse(secCurrRate);
@@ -338,6 +349,163 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        thirdCurrencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i != 0){
+                    thirdCurrencyShort = adapterView.getItemAtPosition(i).toString();
+                    StringBuilder builder = new StringBuilder();
+                    Cursor cursor = database.getAllRates();
+                    while (cursor.moveToNext()){
+                        builder.append(cursor.getString(0));
+                    }
+
+                    if (builder.toString() != null)
+                    {
+                        try {
+                            JSONObject json = new JSONObject(builder.toString());
+                            thirdCurrency = json.getString(thirdCurrencyShort);
+                            String thirdCurrencyDouble = df.format(Double.parseDouble(thirdCurrency));
+                            thirdCurrencyRate.setText(thirdCurrencyDouble);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if(currencyBaseTotalAmount.length() >0){
+                            try {
+                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+                                //first currency changes
+                                String thirdCurrRate = thirdCurrencyRate.getText().toString();
+                                Number thirdCurrRateNumber = doubleFormat.parse(thirdCurrRate);
+                                double thirdCurrDouble = thirdCurrRateNumber.doubleValue();
+                                double thirdCurrencyTotal = baseAmountDouble * thirdCurrDouble;
+                                thirdCurrencyTotalString = df2.format(thirdCurrencyTotal);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            } thirdCurrencyTotal.setText(thirdCurrencyTotalString);
+                        }
+                    }
+                }else {
+                    thirdCurrencyRate.setText("0");
+                    thirdCurrencyShort = null;
+                    thirdCurrencyTotal.setText("0");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        fourthCurrencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i!= 0){
+                    fourthCurrencyShort =  adapterView.getItemAtPosition(i).toString();
+                    StringBuilder builder = new StringBuilder();
+                    Cursor cursor = database.getAllRates();
+                    while (cursor.moveToNext()){
+                        builder.append(cursor.getString(0));
+                    }
+                    if (builder.toString() != null) {
+                        try {
+
+                            JSONObject json = new JSONObject(builder.toString());
+                            fourthCurrency = json.getString(fourthCurrencyShort);
+                            String secondCurrencyDouble = df.format(Double.parseDouble(fourthCurrency));
+                            fourthCurrencyRate.setText(secondCurrencyDouble);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (currencyBaseTotalAmount.length() > 0) {
+                            try {
+                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+
+                                String fourthCurrRate = fourthCurrencyRate.getText().toString();
+                                Number fourthCurrNumber = doubleFormat.parse(fourthCurrRate);
+                                double fourthCurrDouble = fourthCurrNumber.doubleValue();
+                                double fourthCurrencyTotal = baseAmountDouble * fourthCurrDouble;
+                                fourthCurrencyTotalString = df2.format(fourthCurrencyTotal);
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            fourthCurrencyTotal.setText(fourthCurrencyTotalString);
+                        }
+                    }
+                }else{
+                    fourthCurrencyRate.setText("0");
+                    fourthCurrencyShort = null;
+                    fourthCurrencyTotal.setText("0");
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        fifthCurrencySpiner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i!= 0){
+                    fifthhCurrencyShort =  adapterView.getItemAtPosition(i).toString();
+                    StringBuilder builder = new StringBuilder();
+                    Cursor cursor = database.getAllRates();
+                    while (cursor.moveToNext()){
+                        builder.append(cursor.getString(0));
+                    }
+                    if (builder.toString() != null) {
+                        try {
+
+                            JSONObject json = new JSONObject(builder.toString());
+                            fifthCurrency = json.getString(fifthhCurrencyShort);
+                            String fifthCurrencyDouble = df.format(Double.parseDouble(fifthCurrency));
+                            fifthCurrencyRate.setText(fifthCurrencyDouble);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (currencyBaseTotalAmount.length() > 0) {
+                            try {
+                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+
+                                String fifthCurrRate = fifthCurrencyRate.getText().toString();
+                                Number fifthCurrNumber = doubleFormat.parse(fifthCurrRate);
+                                double fifthCurrDouble = fifthCurrNumber.doubleValue();
+                                double fifthCurrencyTotal = baseAmountDouble * fifthCurrDouble;
+                                fifthCurrencyTotalString = df2.format(fifthCurrencyTotal);
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            fifthCurrencyTotal.setText(fifthCurrencyTotalString);
+                        }
+                    }
+                }else{
+                    fifthCurrencyRate.setText("0");
+                    fifthhCurrencyShort = null;
+                    fifthCurrencyTotal.setText("0");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
     }
 
     // Initialize app controls.
@@ -350,6 +518,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (currencyBaseTotalAmount == null) {
             currencyBaseTotalAmount = (EditText) findViewById(R.id.currencyBaseTotalAmount);
+            char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
+            currencyBaseTotalAmount.setKeyListener(DigitsKeyListener.getInstance("0123456789" + separator));
         }
 
         if (firstCurrencySpiner == null) {
@@ -417,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // This handler is used to wait for child thread message to update server response text in TextView.
-        uiUpdater = new Handler() {
+        uiUpdater1 = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
@@ -433,70 +603,236 @@ public class MainActivity extends AppCompatActivity {
 
                                 database.addRates(jsonObj.toString());
 
-                                if (jsonObj.getString(firstCurrencyShort) != null){
+                                    if (jsonObj.getString(firstCurrencyShort) != null) {
 
-                                    firstCurrency=jsonObj.getString(firstCurrencyShort);
+                                        firstCurrency = jsonObj.getString(firstCurrencyShort);
 
-                                    String firstCurrencyDouble = df.format(Double.parseDouble(firstCurrency));
+                                        String firstCurrencyDouble = df.format(Double.parseDouble(firstCurrency));
 
-                                    firstCurrencyRate.setText(firstCurrencyDouble);
+                                        firstCurrencyRate.setText(firstCurrencyDouble);
 
-                                    if (currencyBaseTotalAmount.length() > 0){
-                                        try {
-                                        String baseAmount = currencyBaseTotalAmount.getText().toString();
-                                        double baseAmountDouble = Double.parseDouble(baseAmount);
-                                        //first currency changes
-                                        String firstCurrRate = firstCurrencyRate.getText().toString();
-                                        Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
-                                        double firstCurrDouble = firstCurrRateNumber.doubleValue();
-                                        double firstCurrencyTotal = baseAmountDouble * firstCurrDouble;
-                                        firstCurrencyTotalString = df2.format(firstCurrencyTotal);
+                                        if (currencyBaseTotalAmount.length() > 0) {
+                                            try {
+                                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+                                                //first currency changes
+                                                String firstCurrRate = firstCurrencyRate.getText().toString();
+                                                Number firstCurrRateNumber = doubleFormat.parse(firstCurrRate);
+                                                double firstCurrDouble = firstCurrRateNumber.doubleValue();
+                                                double firstCurrencyTotal = baseAmountDouble * firstCurrDouble;
+                                                firstCurrencyTotalString = df2.format(firstCurrencyTotal);
 
-                                        } catch (ParseException e) {
-                                            e.printStackTrace();
-                                        }firstCurrencyTotal.setText(firstCurrencyTotalString);
-                                    }else firstCurrencyTotal.setText("0");
-                                }else{
-                                    firstCurrencyRate.setText("0");
-                                }
-
-                                if(jsonObj.getString(secondCurrencyShort) != null) {
-
-                                    secondCurrency = jsonObj.getString(secondCurrencyShort);
-
-                                    String secondCurrencyDouble = df.format(Double.parseDouble(secondCurrency));
-
-                                    secondCurrencyRate.setText(secondCurrencyDouble);
-
-                                    if (currencyBaseTotalAmount.length() > 0){
-                                        try {
-
-                                            String baseAmount = currencyBaseTotalAmount.getText().toString();
-                                            double baseAmountDouble = Double.parseDouble(baseAmount);
-
-                                            String secCurrRate = secondCurrencyRate.getText().toString();
-                                            Number secCurrNumber = doubleFormat.parse(secCurrRate);
-                                            double secCurrDouble = secCurrNumber.doubleValue();
-                                            double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
-                                            secondCurrencyTotalString = df2.format(secondCurrencyTotal);
-
-                                        } catch (ParseException e) {
-                                            e.printStackTrace();
-                                        } secondCurrencyTotal.setText(secondCurrencyTotalString);
-                                        }
-
-                                }else{
-                                    secondCurrencyRate.setText("0");
-                                }
-
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            firstCurrencyTotal.setText(firstCurrencyTotalString);
+                                        } else firstCurrencyTotal.setText("0");
+                                    } else {
+                                        firstCurrencyRate.setText("0");
+                                    }
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            }
+                            }}}}}};
 
-                    }
-                }
-    }}};
-    }
+
+        uiUpdater2 = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
+                    Bundle bundle = msg.getData();
+
+                    if (bundle != null) {
+
+                        String responseText = bundle.getString(RESPONSE_TEXT);
+                        if (responseText != null) {
+                            try {
+
+                                JSONObject jsonObj = (new JSONObject(responseText)).getJSONObject("rates");
+
+                                database.addRates(jsonObj.toString());
+
+                                    if (jsonObj.getString(secondCurrencyShort) != null) {
+
+                                        secondCurrency = jsonObj.getString(secondCurrencyShort);
+
+                                        String secondCurrencyDouble = df.format(Double.parseDouble(secondCurrency));
+
+                                        secondCurrencyRate.setText(secondCurrencyDouble);
+
+                                        if (currencyBaseTotalAmount.length() > 0) {
+                                            try {
+
+                                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+
+                                                String secCurrRate = secondCurrencyRate.getText().toString();
+                                                Number secCurrNumber = doubleFormat.parse(secCurrRate);
+                                                double secCurrDouble = secCurrNumber.doubleValue();
+                                                double secondCurrencyTotal = baseAmountDouble * secCurrDouble;
+                                                secondCurrencyTotalString = df2.format(secondCurrencyTotal);
+
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            secondCurrencyTotal.setText(secondCurrencyTotalString);
+                                        }
+
+                                    } else {
+                                        secondCurrencyRate.setText("0");
+                                    }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }}}}}};
+
+        uiUpdater3= new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
+                    Bundle bundle = msg.getData();
+
+                    if (bundle != null) {
+
+                        String responseText = bundle.getString(RESPONSE_TEXT);
+                        if (responseText != null) {
+                            try {
+
+                                JSONObject jsonObj = (new JSONObject(responseText)).getJSONObject("rates");
+
+                                database.addRates(jsonObj.toString());
+
+                                    if (jsonObj.getString(thirdCurrencyShort) != null) {
+
+                                        thirdCurrency = jsonObj.getString(thirdCurrencyShort);
+
+                                        String thirdCurrencyDouble = df.format(Double.parseDouble(thirdCurrency));
+
+                                        thirdCurrencyRate.setText(thirdCurrencyDouble);
+
+                                        if (currencyBaseTotalAmount.length() > 0) {
+
+                                            try {
+                                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+
+                                                String thirdCurrRate = thirdCurrencyRate.getText().toString();
+                                                Number thirdCurrNumber = doubleFormat.parse(thirdCurrRate);
+                                                double thirdCurrDouble = thirdCurrNumber.doubleValue();
+                                                double thirdCurrencyTotal = baseAmountDouble * thirdCurrDouble;
+                                                thirdCurrencyTotalString = df2.format(thirdCurrencyTotal);
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            thirdCurrencyTotal.setText(thirdCurrencyTotalString);
+                                        } else {
+                                            thirdCurrencyTotal.setText("0");
+                                        }
+                                    }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }}}}}};
+
+
+        uiUpdater4 = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
+                    Bundle bundle = msg.getData();
+
+                    if (bundle != null) {
+
+                        String responseText = bundle.getString(RESPONSE_TEXT);
+                        if (responseText != null) {
+                            try {
+
+                                JSONObject jsonObj = (new JSONObject(responseText)).getJSONObject("rates");
+
+                                database.addRates(jsonObj.toString());
+
+                                    if (jsonObj.getString(fourthCurrencyShort) != null) {
+
+                                        fourthCurrency = jsonObj.getString(fourthCurrencyShort);
+
+                                        String fourthCurrencyDouble = df.format(Double.parseDouble(fourthCurrency));
+
+                                        fourthCurrencyRate.setText(fourthCurrencyDouble);
+
+                                        if (currencyBaseTotalAmount.length() > 0) {
+
+                                            try {
+                                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+
+                                                String fourthCurrRate = fourthCurrencyRate.getText().toString();
+                                                Number fourthCurrNumber = doubleFormat.parse(fourthCurrRate);
+                                                double fourthCurrDouble = fourthCurrNumber.doubleValue();
+                                                double fourthCurrencyTotal = baseAmountDouble * fourthCurrDouble;
+                                                fourthCurrencyTotalString = df2.format(fourthCurrencyTotal);
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            fourthCurrencyTotal.setText(thirdCurrencyTotalString);
+                                        } else {
+                                            fourthCurrencyTotal.setText("0");
+                                        }
+                                    }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }}}}}};
+
+
+        uiUpdater5 = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == REQUEST_CODE_SHOW_RESPONSE_TEXT) {
+                Bundle bundle = msg.getData();
+
+                if (bundle != null) {
+
+                    String responseText = bundle.getString(RESPONSE_TEXT);
+                    if (responseText != null) {
+                        try {
+
+                            JSONObject jsonObj = (new JSONObject(responseText)).getJSONObject("rates");
+
+                            database.addRates(jsonObj.toString());
+
+
+                                    if (jsonObj.getString(fifthhCurrencyShort) != null) {
+
+                                        fifthCurrency = jsonObj.getString(fifthhCurrencyShort);
+
+                                        String fifthCurrencyDouble = df.format(Double.parseDouble(fifthCurrency));
+
+                                        fifthCurrencyRate.setText(fifthCurrencyDouble);
+
+                                        if (currencyBaseTotalAmount.length() > 0) {
+
+                                            try {
+                                                String baseAmount = currencyBaseTotalAmount.getText().toString();
+                                                Number baseAmountDoubleNumber =  doubleFormat.parse(baseAmount);
+                                                double baseAmountDouble = baseAmountDoubleNumber.doubleValue();
+
+                                                String fifthCurrRate = fifthCurrencyRate.getText().toString();
+                                                Number fifthCurrNumber = doubleFormat.parse(fifthCurrRate);
+                                                double fifthCurrDouble = fifthCurrNumber.doubleValue();
+                                                double fifthCurrencyTotal = baseAmountDouble * fifthCurrDouble;
+                                                fifthCurrencyTotalString = df2.format(fifthCurrencyTotal);
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            fifthCurrencyTotal.setText(fifthCurrencyTotalString);
+                                        } else {
+                                            fifthCurrencyTotal.setText("0");
+                                        }
+                                    }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }}}}}};}
 
 
     /* Start a thread to send http request to web server use HttpURLConnection object. */
@@ -555,19 +891,36 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // Send message to main thread to update response text in TextView after read all.
-                    Message message = new Message();
+                    Message message1 = new Message();
+                    Message message2 = new Message();
+                    Message message3 = new Message();
+                    Message message4 = new Message();
+                    Message message5 = new Message();
 
                     // Set message type.
-                    message.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
+                    message1.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
+                    message2.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
+                    message3.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
+                    message4.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
+                    message5.what = REQUEST_CODE_SHOW_RESPONSE_TEXT;
 
                     // Create a bundle object.
                     Bundle bundle = new Bundle();
                     // Put response text in the bundle with the special key.
                     bundle.putString(RESPONSE_TEXT, readTextBuf.toString());
                     // Set bundle data in message.
-                    message.setData(bundle);
+                    message1.setData(bundle);
+                    message2.setData(bundle);
+                    message3.setData(bundle);
+                    message4.setData(bundle);
+                    message5.setData(bundle);
                     // Send message to main thread Handler to process.
-                    uiUpdater.sendMessage(message);
+                    uiUpdater1.sendMessage(message1);
+                    uiUpdater2.sendMessage(message2);
+                    uiUpdater3.sendMessage(message3);
+                    uiUpdater4.sendMessage(message4);
+                    uiUpdater5.sendMessage(message5);
+
                 }catch(MalformedURLException ex)
                 {
                     Log.e(TAG_HTTP_URL_CONNECTION, ex.getMessage(), ex);
