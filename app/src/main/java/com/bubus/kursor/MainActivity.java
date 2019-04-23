@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     MyDatabase database;
 
     DecimalFormat df = new DecimalFormat("#.####");
-    DecimalFormat df2 = new DecimalFormat("#.##");
+    DecimalFormat df2 = new DecimalFormat("#,###.##");
 
     NumberFormat doubleFormat = NumberFormat.getInstance(Locale.FRANCE);
 
@@ -237,6 +237,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
 
+               if(s.length() > 0){
+
+               }
             }
         });
 
@@ -520,6 +523,8 @@ public class MainActivity extends AppCompatActivity {
             currencyBaseTotalAmount = (EditText) findViewById(R.id.currencyBaseTotalAmount);
             char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
             currencyBaseTotalAmount.setKeyListener(DigitsKeyListener.getInstance("0123456789" + separator));
+            currencyBaseTotalAmount.addTextChangedListener(new NumberTextWatcher(currencyBaseTotalAmount));
+
         }
 
         if (firstCurrencySpiner == null) {
@@ -528,10 +533,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (firstCurrencyRate == null) {
             firstCurrencyRate = (TextView) findViewById(R.id.first_currency_rate);
+            firstCurrencyRate.setTextIsSelectable(true);
         }
 
         if (firstCurrencyTotal == null) {
             firstCurrencyTotal = (TextView) findViewById(R.id.firstCurrencyTotal);
+            firstCurrencyTotal.setTextIsSelectable(true);
         }
 
         if (secondCurrencySpiner == null) {
@@ -540,10 +547,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (secondCurrencyRate == null) {
             secondCurrencyRate = (TextView) findViewById(R.id.second_currency_rate);
+            secondCurrencyRate.setTextIsSelectable(true);
         }
 
         if (secondCurrencyTotal == null) {
             secondCurrencyTotal = (TextView) findViewById(R.id.secoundCurrencyTotal);
+            secondCurrencyTotal.setTextIsSelectable(true);
         }
 
         if (thirdCurrencySpiner == null) {
@@ -552,10 +561,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (thirdCurrencyRate == null ) {
             thirdCurrencyRate = (TextView) findViewById(R.id.third_currency_rate);
+            thirdCurrencyRate.setTextIsSelectable(true);
         }
 
         if (thirdCurrencyTotal == null) {
             thirdCurrencyTotal = (TextView) findViewById(R.id.thirdCurrencyTotal);
+            thirdCurrencyTotal.setTextIsSelectable(true);
         }
 
         //fourth
@@ -566,10 +577,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (fourthCurrencyRate == null ) {
             fourthCurrencyRate = (TextView) findViewById(R.id.fourth_currency_rate);
+            fourthCurrencyRate.setTextIsSelectable(true);
         }
 
         if (fourthCurrencyTotal == null) {
             fourthCurrencyTotal = (TextView) findViewById(R.id.fourthCurrencyTotal);
+            fourthCurrencyTotal.setTextIsSelectable(true);
         }
 
         //fifth
@@ -580,10 +593,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (fifthCurrencyRate == null ) {
             fifthCurrencyRate = (TextView) findViewById(R.id.fifth_currency_rate);
+            fifthCurrencyRate.setTextIsSelectable(true);
         }
 
         if (fifthCurrencyTotal == null) {
             fifthCurrencyTotal = (TextView) findViewById(R.id.fifthCurrencyTotal);
+            fifthCurrencyTotal.setTextIsSelectable(true);
         }
 
         // This handler is used to wait for child thread message to update server response text in TextView.
